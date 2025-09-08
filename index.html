@@ -11,6 +11,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Анимация выстрела</title>
     <style>
+      document.addEventListener('keydown', function(e) {
+    if (e.code === 'Space') { // Клавиша пробела
+        // Стреляем в центр экрана
+        createShotEffect(window.innerWidth / 2, window.innerHeight / 2);
+        e.preventDefault(); // Отменяем прокрутку пробелом
+    }
+});
         body {
             margin: 0;
             padding: 0;
@@ -331,4 +338,5 @@ html
   </div>
 </body>
 </html>
+
 
