@@ -2,291 +2,421 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PPeat - Аниме стиль</title>
-  <link rel="stylesheet" href="my.css">
-  <link rel="icon" href="icon.jpg">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Mono+One&display=swap" rel="stylesheet">
-  <script src="jaja.js" defer></script><meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Анимация выстрела</title>
-    <style>
-      document.addEventListener('keydown', function(e) {
-    if (e.code === 'Space') { // Клавиша пробела
-        // Стреляем в центр экрана
-        createShotEffect(window.innerWidth / 2, window.innerHeight / 2);
-        e.preventDefault(); // Отменяем прокрутку пробелом
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>PPeat - Аниме стиль | Калькулятор + Перевод</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik+Mono+One&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    /* RESET & ГЛОБАЛЬНЫЙ СТИЛЬ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-});
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: #000;
-            cursor: crosshair;
-            overflow: hidden;
-        }
 
-        .shot {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #fff;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: shotAnimation 0.5s ease-out forwards;
-        }
+    body {
+      background: linear-gradient(145deg, #1a0b2e 0%, #2a1a3a 100%);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      cursor: crosshair;
+      position: relative;
+    }
 
-        .muzzle-flash {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, #ff9900, #ff6600, transparent);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: muzzleFlash 0.1s ease-out forwards;
-        }
+    /* анимационный фон (легкое свечение) */
+    .anime-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(255, 120, 200, 0.08), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        @keyframes shotAnimation {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(0);
-                opacity: 0;
-            }
-        }
+    .main-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
 
-        @keyframes muzzleFlash {
-            0% {
-                transform: scale(0);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.5);
-                opacity: 0.8;
-            }
-            100% {
-                transform: scale(0);
-                opacity: 0;
-            }
-        }
-    </style>
-</head>
-    <script>
-        document.addEventListener('click', function(e) {
-            createShotEffect(e.clientX, e.clientY);
-        });
+    /* === ОСНОВНОЙ АНИМЕ КОНТЕЙНЕР === */
+    .anime-container {
+      background: rgba(20, 12, 36, 0.65);
+      backdrop-filter: blur(10px);
+      border-radius: 48px;
+      border: 1px solid rgba(255, 200, 255, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 105, 180, 0.3);
+      padding: 2rem 2rem 2rem 2rem;
+      transition: all 0.3s ease;
+    }
 
-        function createShotEffect(x, y) {
-            // Создаем вспышку
-            const flash = document.createElement('div');
-            flash.className = 'muzzle-flash';
-            flash.style.left = (x - 10) + 'px';
-            flash.style.top = (y - 10) + 'px';
-            document.body.appendChild(flash);
+    /* ЗАГОЛОВОК */
+    .anime-title {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
 
-            // Создаем след выстрела
-            const shot = document.createElement('div');
-            shot.className = 'shot';
-            shot.style.left = x + 'px';
-            shot.style.top = y + 'px';
-            document.body.appendChild(shot);
+    .cssload-loader {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, #FFB7F2, #FF85C8, #A56CCB);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 8px rgba(255, 105, 180, 0.6);
+      letter-spacing: 1px;
+      animation: floatGlow 2s ease-in-out infinite;
+    }
 
-            // Добавляем звук выстрела (опционально)
-            playShotSound();
+    @keyframes floatGlow {
+      0% { text-shadow: 0 0 5px #ff99cc; transform: translateY(0px);}
+      50% { text-shadow: 0 0 18px #ff66c0; transform: translateY(-4px);}
+      100% { text-shadow: 0 0 5px #ff99cc; transform: translateY(0px);}
+    }
 
-            // Удаляем элементы после анимации
-            setTimeout(() => {
-                flash.remove();
-                shot.remove();
-            }, 500);
-        }
+    /* сетка ссылок (кнопки) */
+    .anime-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
 
-        function playShotSound() {
-            // Создаем звук выстрела
-            const audio = new Audio();
-            audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbVtfdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrHn67VYEAhGn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3M8t6QQAoUYLPl7LZbEAdHn+Dwwm0fBzOH0fLQfzEKG2W85fG9XhMHUqTf8sV0Jwgcd8Tu5phDDBBiu+fwtFwPBk2i4/LHdioHJn3
-можно пж без звука а то бабушка от испугу умрет
-Конечно! Вот код без звука, с более мягкой анимацией:
+    .anime-button {
+      background: rgba(30, 20, 50, 0.7);
+      backdrop-filter: blur(4px);
+      border: 1px solid #ffa5d0;
+      padding: 0.7rem 1.5rem;
+      border-radius: 60px;
+      color: #ffe6f0;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: 0.2s;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
 
-html
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мягкая анимация выстрела</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            cursor: crosshair;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
+    .anime-button:hover {
+      background: #ff7eb3;
+      color: #1e102e;
+      border-color: white;
+      transform: scale(1.02);
+      box-shadow: 0 0 15px #ff99cc;
+    }
 
-        .container {
-            text-align: center;
-            padding-top: 50px;
-            color: white;
-        }
+    /* таблица в аниме стиле */
+    .anime-table {
+      width: 100%;
+      background: rgba(255, 240, 250, 0.1);
+      border-radius: 28px;
+      overflow: hidden;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+      font-weight: 500;
+    }
 
-        .shot {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: radial-gradient(circle, #fff 30%, #ffeb3b 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: shotAnimation 0.8s ease-out forwards;
-            box-shadow: 0 0 15px rgba(255, 235, 59, 0.6);
-        }
+    .anime-table td {
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(255, 180, 220, 0.3);
+      color: #f3d9ff;
+      font-size: 1rem;
+    }
 
-        .muzzle-flash {
-            position: absolute;
-            width: 25px;
-            height: 25px;
-            background: radial-gradient(circle, #ffeb3b 20%, #ff9800 40%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: muzzleFlash 0.3s ease-out forwards;
-        }
+    .anime-table tr:last-child td {
+      border-bottom: none;
+    }
 
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: #ffeb3b;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: particleMove 0.6s ease-out forwards;
-        }
+    /* текст */
+    .anime-text p {
+      color: #ffecf5;
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+    }
 
-        @keyframes shotAnimation {
-            0% {
-                transform: scale(1.5);
-                opacity: 1;
-            }
-            70% {
-                opacity: 0.5;
-            }
-            100% {
-                transform: scale(0.2);
-                opacity: 0;
-            }
-        }
+    .pink-text {
+      color: #ffabd9;
+      font-weight: bold;
+      text-shadow: 0 0 3px #ff4d9a;
+    }
 
-        @keyframes muzzleFlash {
-            0% {
-                transform: scale(0);
-                opacity: 0.8;
-            }
-            50% {
-                transform: scale(1.2);
-                opacity: 0.6;
-            }
-            100% {
-                transform: scale(0);
-                opacity: 0;
-            }
-        }
+    .anime-lists {
+      display: flex;
+      gap: 3rem;
+      margin: 1.5rem 0 1rem;
+      justify-content: center;
+    }
 
-        @keyframes particleMove {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(
-                    calc(var(--tx) * 30px), 
-                    calc(var(--ty) * 30px)
-                ) scale(0);
-                opacity: 0;
-            }
-        }
+    .anime-lists ol, .anime-lists ul {
+      color: #ffcfef;
+      padding-left: 1.5rem;
+    }
 
-        .instruction {
-            color: white;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-    </style>
+    .anime-subtext {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #c9a9e6;
+      margin-top: 0.3rem;
+    }
+
+    .anime-greeting {
+      text-align: center;
+      margin: 1rem 0;
+      font-weight: bold;
+      color: #ffccf0;
+    }
+
+    /* ========== НОВЫЙ БЛОК: КАЛЬКУЛЯТОР + ПЕРЕВОДЧИК (В КОНЦЕ) ========== */
+    .tools-wrapper {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 2px dashed rgba(255, 160, 210, 0.5);
+    }
+
+    .tools-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+
+    .tool-card {
+      flex: 1;
+      min-width: 260px;
+      background: rgba(10, 5, 20, 0.65);
+      backdrop-filter: blur(12px);
+      border-radius: 36px;
+      padding: 1.6rem 1.8rem;
+      border: 1px solid rgba(255, 140, 200, 0.6);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-5px);
+      border-color: #ff9ed5;
+    }
+
+    .tool-title {
+      font-family: 'Rubik Mono One', monospace;
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #ffd966;
+      letter-spacing: 1px;
+      text-shadow: 0 0 5px #ff9f4a;
+    }
+
+    /* калькулятор */
+    .calculator {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .calc-input {
+      background: #1e162f;
+      border: 1px solid #ffa0cd;
+      border-radius: 60px;
+      padding: 12px 18px;
+      color: #fff0fa;
+      font-size: 1.2rem;
+      text-align: right;
+      outline: none;
+      font-weight: 600;
+    }
+
+    .calc-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .calc-btn {
+      background: #2c1e44;
+      border: none;
+      border-radius: 28px;
+      padding: 12px 0;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #ffe6f5;
+      transition: 0.1s linear;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #0a0520;
+    }
+
+    .calc-btn:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+
+    .calc-btn.op {
+      background: #ff7b9c;
+      color: #2a0e2a;
+    }
+
+    .calc-btn.equal {
+      background: #c05dd4;
+      grid-column: span 2;
+    }
+
+    .calc-result {
+      background: #0a0318;
+      border-radius: 40px;
+      padding: 12px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #ffe0b5;
+      border: 1px solid #ffa5da;
+    }
+
+    /* переводчик */
+    .translator {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .lang-switch {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .lang-btn {
+      background: #372756;
+      border: none;
+      padding: 6px 20px;
+      border-radius: 60px;
+      font-weight: bold;
+      color: #ffdfef;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+
+    .lang-btn.active {
+      background: #ff77aa;
+      color: #1f0c2a;
+      box-shadow: 0 0 12px #ff99dd;
+    }
+
+    .text-input, .text-output {
+      background: #1a112b;
+      border: 1px solid #ffb7e0;
+      border-radius: 28px;
+      padding: 12px 18px;
+      color: #fff2fc;
+      font-size: 1rem;
+      resize: vertical;
+      font-family: 'Inter', monospace;
+      outline: none;
+    }
+
+    .text-output {
+      background: #120b20;
+      min-height: 80px;
+      font-weight: 500;
+    }
+
+    .translate-btn {
+      background: #aa6eff;
+      border: none;
+      border-radius: 60px;
+      padding: 10px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .translate-btn:hover {
+      background: #c988ff;
+      box-shadow: 0 0 12px #cc88ff;
+    }
+
+    .direction-hint {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #ccb3e6;
+    }
+
+    /* анимация выстрела (без звука) */
+    .shot {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle, #fff 30%, #ffeb3b 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: shotAnimation 0.8s ease-out forwards;
+      z-index: 9999;
+    }
+
+    .muzzle-flash {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background: radial-gradient(circle, #ffeb3b 20%, #ff9800 40%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: muzzleFlash 0.3s ease-out forwards;
+      z-index: 9998;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #ffd966;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: particleMove 0.6s ease-out forwards;
+      z-index: 9997;
+    }
+
+    @keyframes shotAnimation {
+      0% { transform: scale(1.5); opacity: 1; }
+      70% { opacity: 0.5; }
+      100% { transform: scale(0.2); opacity: 0; }
+    }
+    @keyframes muzzleFlash {
+      0% { transform: scale(0); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 0.6; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+    @keyframes particleMove {
+      0% { transform: translate(0,0) scale(1); opacity: 1; }
+      100% { transform: translate(calc(var(--tx) * 35px), calc(var(--ty) * 35px)) scale(0); opacity: 0; }
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: #b887c9;
+      font-size: 0.75rem;
+    }
+    @media (max-width: 760px) {
+      .anime-container { padding: 1.2rem; }
+      .tool-card { min-width: 100%; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>✨ Мягкая анимация ✨</h1>
-        <p class="instruction">Кликните anywhere на экране</p>
-    </div>
-
-    <script>
-        document.addEventListener('click', function(e) {
-            createShotEffect(e.clientX, e.clientY);
-        });
-
-        function createShotEffect(x, y) {
-            // Создаем мягкую вспышку
-            const flash = document.createElement('div');
-            flash.className = 'muzzle-flash';
-            flash.style.left = (x - 12.5) + 'px';
-            flash.style.top = (y - 12.5) + 'px';
-            document.body.appendChild(flash);
-
-            // Создаем основной след выстрела
-            const shot = document.createElement('div');
-            shot.className = 'shot';
-            shot.style.left = x + 'px';
-            shot.style.top = y + 'px';
-            document.body.appendChild(shot);
-
-            // Создаем частицы вокруг
-            createParticles(x, y);
-
-            // Удаляем элементы после анимации
-            setTimeout(() => {
-                flash.remove();
-                shot.remove();
-            }, 800);
-        }
-
-        function createParticles(x, y) {
-            // Создаем 6 частиц вокруг центра
-            for (let i = 0; i < 6; i++) {
-                setTimeout(() => {
-                    const particle = document.createElement('div');
-                    particle.className = 'particle';
-                    
-                    // Случайное направление для частицы
-                    const angle = Math.random() * Math.PI * 2;
-                    const tx = Math.cos(angle);
-                    const ty = Math.sin(angle);
-                    
-                    particle.style.setProperty('--tx', tx);
-                    particle.style.setProperty('--ty', ty);
-                    particle.style.left = x + 'px';
-                    particle.style.top = y + 'px';
-                    
-                    document.body.appendChild(particle);
-
-                    // Удаляем частицу после анимации
-                    setTimeout(() => {
-                        particle.remove();
-                    }, 600);
-                }, i * 50); // Небольшая задержка между частицами
-            }
-        }
-    </script>
-  <div class="anime-background"></div>
+<div class="anime-bg"></div>
+<div class="main-container">
   <div class="anime-container">
+    <!-- заголовок -->
     <div class="anime-title">
       <div class="cssload-loader">Диплом Кабанцева Олега 2 Курс</div>
     </div>
-    
+
+    <!-- блок ссылок -->
     <div class="anime-links">
       <a href="https://olegkabantsev4.wordpress.com/about/" class="anime-button">мой Wordpress сайт</a>
       <a href="https://editorhtmlonline.com/ru/" class="anime-button">Редактор Html</a>
@@ -298,56 +428,316 @@ html
       <a href="https://kaboleg.github.io/framer1/" class="anime-button">3D web grafica</a>
       <a href="https://docs.google.com/spreadsheets/d/1ZD--flp-GmlGfgA1E1HV5d4awjmtdiGj_NpBSmemQP0/edit?gid=0#gid=0" class="anime-button">прайс список</a>
     </div>
-    
+
+    <!-- таблица, тексты, списки (как в оригинале) -->
     <div class="anime-content">
       <table class="anime-table">
         <tbody>
-          <tr>
-            <td>Делать таблицы</td>
-            <td>Аниме стиль</td>
-            <td>Кавайи!</td>
-          </tr>
-          <tr>
-            <td>HTML</td>
-            <td>CSS</td>
-            <td>JavaScript</td>
-          </tr>
+          <tr><td>Делать таблицы</td><td>Аниме стиль</td><td>Кавайи!</td></tr>
+          <tr><td>HTML</td><td>CSS</td><td>JavaScript</td></tr>
         </tbody>
       </table>
       
       <div class="anime-text">
         <p>Я научился ровнять текст по разным сторонам</p>
         <p><span class="pink-text">Писать цветным текстом</span></p>
-        <p>Писать <em>курсивом,</em> <strong>жирным, <em>курсив-жирыным</em></strong>, и обычным текстом.</p>
+        <p>Писать <em>курсивом,</em> <strong>жирным, <em>курсив-жирным</em></strong>, и обычным текстом.</p>
       </div>
       
       <div class="anime-lists">
-        <ol>
-          <li>делать</li>
-          <li>нумерованый</li>
-        </ol>
-        
-        <ul>
-          <li>и</li>
-          <li>маркированный</li>
-        </ul>
+        <ol><li>делать</li><li>нумерованый</li></ol>
+        <ul><li>и</li><li>маркированный</li></ul>
       </div>
       <p class="anime-subtext">списки</p>
     </div>
     
-    <div id="demo" class="anime-greeting"></div>
+    <div id="demo" class="anime-greeting">✨ Привет, отаку! ✨</div>
     
-    <div class="anime-character"></div>
+    <!-- ========== НОВЫЙ РАЗДЕЛ: КАЛЬКУЛЯТОР + ПЕРЕВОДЧИК (РУС->АНГЛ / АНГЛ->РУС) ========== -->
+    <div class="tools-wrapper">
+      <div class="tools-grid">
+        
+        <!-- КАЛЬКУЛЯТОР -->
+        <div class="tool-card">
+          <div class="tool-title">🎲 Калькулятор</div>
+          <div class="calculator">
+            <input type="text" id="calcScreen" class="calc-input" placeholder="0" readonly value="0">
+            <div class="calc-buttons">
+              <button class="calc-btn" data-num="7">7</button>
+              <button class="calc-btn" data-num="8">8</button>
+              <button class="calc-btn" data-num="9">9</button>
+              <button class="calc-btn op" data-op="/">/</button>
+              
+              <button class="calc-btn" data-num="4">4</button>
+              <button class="calc-btn" data-num="5">5</button>
+              <button class="calc-btn" data-num="6">6</button>
+              <button class="calc-btn op" data-op="*">*</button>
+              
+              <button class="calc-btn" data-num="1">1</button>
+              <button class="calc-btn" data-num="2">2</button>
+              <button class="calc-btn" data-num="3">3</button>
+              <button class="calc-btn op" data-op="-">-</button>
+              
+              <button class="calc-btn" data-num="0">0</button>
+              <button class="calc-btn" data-num="00">00</button>
+              <button class="calc-btn" data-num=".">.</button>
+              <button class="calc-btn op" data-op="+">+</button>
+              
+              <button class="calc-btn op" data-action="clear">C</button>
+              <button class="calc-btn equal" data-action="equal">=</button>
+              <button class="calc-btn op" data-action="del">⌫</button>
+            </div>
+            <div class="calc-result" id="calcResultDisplay">= 0</div>
+          </div>
+        </div>
+        
+        <!-- ПЕРЕВОДЧИК: АНГЛИЙСКИЙ <-> РУССКИЙ (полноценный + рус->англ тоже) -->
+        <div class="tool-card">
+          <div class="tool-title">🌐 Переводчик</div>
+          <div class="translator">
+            <div class="lang-switch">
+              <button id="langEnToRuBtn" class="lang-btn active">🇬🇧 Англ → Русский</button>
+              <button id="langRuToEnBtn" class="lang-btn">🇷🇺 Русский → Английский</button>
+            </div>
+            <textarea id="inputText" class="text-input" rows="2" placeholder="Введите текст для перевода..."></textarea>
+            <button id="translateActionBtn" class="translate-btn">✨ Перевести ✨</button>
+            <textarea id="outputText" class="text-output" rows="2" readonly placeholder="Результат перевода..."></textarea>
+            <div class="direction-hint">💡 Поддерживается перевод с английского на русский и с русского на английский</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- конец нового блока -->
+    
+    <footer>🎀 нажми в любом месте — кавайный выстрел 🎀</footer>
   </div>
-          <img scr='https://image.winudf.com/v2/image1/cGluay5tb2RzLmthd2FpaS5jcmFmdF9pY29uXzE2MzY1NjIzOTZfMDk1/icon.webp?w=140&fakeurl=1&type=.webp'>
+</div>
+
+<script>
+  // ---------- АНИМАЦИЯ ВЫСТРЕЛА (без звука, клик и пробел) ----------
+  function createShotEffect(x, y) {
+    // вспышка
+    const flash = document.createElement('div');
+    flash.className = 'muzzle-flash';
+    flash.style.left = (x - 12.5) + 'px';
+    flash.style.top = (y - 12.5) + 'px';
+    document.body.appendChild(flash);
+    // основной след
+    const shot = document.createElement('div');
+    shot.className = 'shot';
+    shot.style.left = x + 'px';
+    shot.style.top = y + 'px';
+    document.body.appendChild(shot);
+    // частицы
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        const angle = Math.random() * Math.PI * 2;
+        const tx = Math.cos(angle);
+        const ty = Math.sin(angle);
+        particle.style.setProperty('--tx', tx);
+        particle.style.setProperty('--ty', ty);
+        particle.style.left = x + 'px';
+        particle.style.top = y + 'px';
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 600);
+      }, i * 30);
+    }
+    setTimeout(() => { flash.remove(); shot.remove(); }, 800);
+  }
+
+  document.addEventListener('click', function(e) {
+    // Исключаем клики по интерактивным элементам калькулятора / переводчика (чтобы не мешать)
+    let target = e.target;
+    let isInteractive = target.closest('.calc-btn') || target.closest('.translate-btn') || target.closest('.lang-btn') || target.closest('.text-input') || target.closest('.calc-input');
+    if (!isInteractive) {
+      createShotEffect(e.clientX, e.clientY);
+    }
+  });
+  // пробел для выстрела по центру
+  document.addEventListener('keydown', function(e) {
+    if (e.code === 'Space' && !e.target.matches('input, textarea, button')) {
+      createShotEffect(window.innerWidth / 2, window.innerHeight / 2);
+      e.preventDefault();
+    }
+  });
+
+  // ---------- КАЛЬКУЛЯТОР (полноценный) ----------
+  const calcScreen = document.getElementById('calcScreen');
+  const calcResultDisplay = document.getElementById('calcResultDisplay');
+  let currentExpression = '0';
+  let lastResult = null;
+
+  function updateCalcUI() {
+    calcScreen.value = currentExpression;
+    // для красоты пытаемся вычислить, если выражение валидно
+    try {
+      let evalExpr = currentExpression.replace(/×/g, '*').replace(/÷/g, '/');
+      let result = Function('"use strict";return (' + evalExpr + ')')();
+      if (!isNaN(result) && isFinite(result)) {
+        calcResultDisplay.innerText = '= ' + result;
+      } else {
+        calcResultDisplay.innerText = '= ?';
+      }
+    } catch(e) {
+      calcResultDisplay.innerText = '= ...';
+    }
+  }
+
+  function setExpression(value) {
+    if (value === '' || value === undefined) currentExpression = '0';
+    else currentExpression = value;
+    updateCalcUI();
+  }
+
+  function handleCalcAction(action, val) {
+    if (action === 'num') {
+      if (currentExpression === '0' && val !== '.') {
+        currentExpression = val;
+      } else {
+        currentExpression += val;
+      }
+      setExpression(currentExpression);
+    } 
+    else if (action === 'op') {
+      const lastChar = currentExpression.slice(-1);
+      if ('+-*/'.includes(lastChar)) {
+        currentExpression = currentExpression.slice(0, -1) + val;
+      } else {
+        currentExpression += val;
+      }
+      setExpression(currentExpression);
+    }
+    else if (action === 'clear') {
+      setExpression('0');
+    }
+    else if (action === 'del') {
+      if (currentExpression.length === 1 || (currentExpression.length === 2 && currentExpression[0] === '-')) {
+        setExpression('0');
+      } else {
+        currentExpression = currentExpression.slice(0, -1);
+        if (currentExpression === '') currentExpression = '0';
+        setExpression(currentExpression);
+      }
+    }
+    else if (action === 'equal') {
+      try {
+        let expr = currentExpression.replace(/×/g, '*').replace(/÷/g, '/');
+        let result = Function('"use strict";return (' + expr + ')')();
+        if (isNaN(result) || !isFinite(result)) throw new Error('Invalid');
+        currentExpression = String(result);
+        setExpression(currentExpression);
+        lastResult = result;
+      } catch(e) {
+        currentExpression = 'Ошибка';
+        updateCalcUI();
+        setTimeout(() => { setExpression('0'); }, 800);
+      }
+    }
+  }
+
+  // навешиваем обработчики на кнопки калькулятора
+  document.querySelectorAll('.calc-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.num !== undefined) {
+        handleCalcAction('num', btn.dataset.num);
+      } else if (btn.dataset.op !== undefined) {
+        handleCalcAction('op', btn.dataset.op);
+      } else if (btn.dataset.action === 'clear') {
+        handleCalcAction('clear');
+      } else if (btn.dataset.action === 'equal') {
+        handleCalcAction('equal');
+      } else if (btn.dataset.action === 'del') {
+        handleCalcAction('del');
+      }
+    });
+  });
+
+  // ---------- ПЕРЕВОДЧИК (русский <-> английский) с использованием MyMemory API (бесплатно, без ключа) ----------
+  let currentDirection = 'en2ru'; // en->ru по умолчанию
+
+  const enToRuBtn = document.getElementById('langEnToRuBtn');
+  const ruToEnBtn = document.getElementById('langRuToEnBtn');
+  const inputTextarea = document.getElementById('inputText');
+  const outputTextarea = document.getElementById('outputText');
+  const translateBtn = document.getElementById('translateActionBtn');
+
+  function setActiveLang(active) {
+    if (active === 'en2ru') {
+      enToRuBtn.classList.add('active');
+      ruToEnBtn.classList.remove('active');
+      currentDirection = 'en2ru';
+      outputTextarea.placeholder = 'Перевод на русский...';
+    } else {
+      ruToEnBtn.classList.add('active');
+      enToRuBtn.classList.remove('active');
+      currentDirection = 'ru2en';
+      outputTextarea.placeholder = 'Translation to English...';
+    }
+    // очищаем вывод при смене направления
+    outputTextarea.value = '';
+  }
+
+  enToRuBtn.addEventListener('click', () => setActiveLang('en2ru'));
+  ruToEnBtn.addEventListener('click', () => setActiveLang('ru2en'));
+
+  async function performTranslate() {
+    let text = inputTextarea.value.trim();
+    if (text === "") {
+      outputTextarea.value = "✨ Введите текст для перевода ✨";
+      return;
+    }
+    let sourceLang = 'en';
+    let targetLang = 'ru';
+    if (currentDirection === 'ru2en') {
+      sourceLang = 'ru';
+      targetLang = 'en';
+    }
+    // Используем MyMemory API (отличный бесплатный перевод, не требует ключа)
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+    try {
+      outputTextarea.value = "🔄 переводим...";
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data && data.responseData && data.responseData.translatedText) {
+        let translated = data.responseData.translatedText;
+        // MyMemory иногда возвращает HTML-сущности, исправляем
+        translated = translated.replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+        outputTextarea.value = translated;
+      } else {
+        outputTextarea.value = "⚠️ Ошибка перевода, попробуйте позже.";
+      }
+    } catch (error) {
+      console.error(error);
+      outputTextarea.value = "❌ Ошибка соединения, но вы можете использовать встроенные фразы :)";
+      // Фолбэк для демонстрации оффлайн (чтобы не пустовало)
+      if (currentDirection === 'en2ru') {
+        const mockRu = { "hello": "привет", "world": "мир", "anime": "аниме", "kawaii": "кавайи", "love": "любовь" };
+        let lower = text.toLowerCase();
+        if (mockRu[lower]) outputTextarea.value = mockRu[lower];
+        else outputTextarea.value = "✨ (демо) переведите позже, api временно недоступен ✨";
+      } else {
+        const mockEn = { "привет": "hello", "мир": "world", "аниме": "anime", "кавайи": "kawaii", "любовь": "love" };
+        let lower = text.toLowerCase();
+        if (mockEn[lower]) outputTextarea.value = mockEn[lower];
+        else outputTextarea.value = "✨ (demo) translation later ✨";
+      }
+    }
+  }
+
+  translateBtn.addEventListener('click', performTranslate);
+  // дополнительно: enter в поле ввода тоже переводит (удобно)
+  inputTextarea.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      performTranslate();
+    }
+  });
+
+  // инициализация
+  setActiveLang('en2ru');
+  updateCalcUI();
+</script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
